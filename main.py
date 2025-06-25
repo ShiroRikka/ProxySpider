@@ -13,7 +13,7 @@ dc.create_index()
 
 while True:
     tester = ProxyTester()
-    ip_list = tester.test_proxy_list(dc.get_ips_to_test())
+    ip_list = tester.test_proxy_list(dc.get_ips_to_test(16),16)
     ip = convert.convert_ip_status_list(ip_list)
 
 

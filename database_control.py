@@ -68,7 +68,7 @@ def get_ip_to_test():
         print(f"ip读取错误：{e}")
 
 
-def get_ips_to_test(limit=10):
+def get_ips_to_test(limit: int =10):
     """
     批量获取待测试的IP，默认一次取10条
     返回格式：[ip1, ip2, ...]
