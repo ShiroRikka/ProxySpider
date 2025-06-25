@@ -1,4 +1,4 @@
-from database_control import DatabaseControl
+from database_control import get_current_score
 
 
 def convert_ip_status_list(raw_list):
@@ -19,8 +19,7 @@ def convert_ip_status_list(raw_list):
         # 转换状态
         status = 1 if status_str == 'success' else 0
 
-        dc = DatabaseControl()
-        current_score = dc.get_current_score(ip_port)
+        current_score = get_current_score(ip_port)
         if status == 1:
             update_score = 100
         else:

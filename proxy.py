@@ -1,6 +1,6 @@
 import requests
 
-from cal_time import today,yesterday,tomo
+from cal_time import today,yesterday
 
 def get_proxy():
     header={

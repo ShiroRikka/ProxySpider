@@ -1,9 +1,6 @@
-import re
 import time
-
 import loguru
 import requests
-from loguru import logger
 from typing import List, Dict, Any
 from concurrent.futures import ThreadPoolExecutor, as_completed
 # 代理连通性测试工具
@@ -105,7 +102,7 @@ class ProxyTester:
         # 使用线程池并发测试
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             future_to_proxy = {
-                executor.submit(self.test_single_proxy, proxy): proxy 
+                executor.submit(self.test_single_proxy, proxy): proxy
                 for proxy in proxy_list
             }
             
