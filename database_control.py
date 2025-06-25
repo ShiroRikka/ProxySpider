@@ -188,7 +188,7 @@ def output_proxies_to_txt():
     try:
         with sqlite3.connect('proxies.db') as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT ip FROM proxies WHERE score = 100")
+            cursor.execute("SELECT ip FROM proxies WHERE score = 100 ORDER BY response_time")
             results = cursor.fetchall()
             ip_str = ','.join(['http://' + row[0] for row in results])
         with open('proxies.txt', 'w', encoding='utf-8') as f:
