@@ -184,3 +184,20 @@ def count_low_score_proxies():
     except sqlite3.Error as e:
         print(f"查询低分代理数量出错: {e}")
         return 0
+
+def delete_duplicate_ips():
+    try:
+        with sqlite3.connect('proxies.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                DELETE FROM proxies
+                WHERE id NOT IN (
+                    SELECT MAX(id) FROM proxies GROUP BY ip
+                )
+            """)
+            conn.commit()
+            print(f"成功删除重复代理IP，删除了 {cursor.rowcount} 条记录")
+            return True
+    except sqlite3.Error as e:
+        print(f"删除重复代理IP失败: {e}")
+        return False

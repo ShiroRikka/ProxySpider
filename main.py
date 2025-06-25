@@ -1,13 +1,12 @@
-import database_control
+import database_control as dc
 import proxy as gp
 from ProxyTester import *
 import convert
 
-dc = database_control
-
 dc.create()
 dc.delete_old_ip()
 dc.multiple_insert(gp.get_proxy())
+dc.delete_duplicate_ips()
 
 dc.create_index()
 tester = ProxyTester()
