@@ -79,7 +79,7 @@ def get_ips_to_test(limit: int =10):
     try:
         with sqlite3.connect('proxies.db') as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT ip FROM proxies WHERE  score >0 AND score < 80 ORDER BY score DESC LIMIT ?", (limit,))
+            cursor.execute("SELECT ip FROM proxies WHERE  score >0 AND score < 70 ORDER BY score DESC LIMIT ?", (limit,))
             results = cursor.fetchall()
             results = ','.join(['http://' + row[0] for row in results])
             return results  # 返回IP字符串列表
