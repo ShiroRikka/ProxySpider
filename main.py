@@ -23,3 +23,4 @@ while(True):
 
 
     dc.update_ips_status(ip)
+    dc.delete_worse_ip()

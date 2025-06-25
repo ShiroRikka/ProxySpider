@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 
+
 class DatabaseControl:
 
 
@@ -12,10 +13,11 @@ class DatabaseControl:
                 CREATE TABLE IF NOT EXISTS proxies (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     ip TEXT NOT NULL,
-                    last_checked TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    last_checked TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+                    score INTEGER DEFAULT 50,
                     is_alive BOOLEAN DEFAULT 0,
                     response_time INTEGER,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    created_at TIMESTAMP DEFAULT (datetime('now', 'localtime')),
                     UNIQUE(ip)  -- 防止重复添加同一IP:端口
                 )
                 ''')
@@ -74,7 +76,7 @@ class DatabaseControl:
         try:
             with sqlite3.connect('proxies.db') as conn:
                 cursor = conn.cursor()
-                cursor.execute("SELECT ip FROM proxies WHERE is_alive = 0 ORDER BY created_at LIMIT ?", (limit,))
+                cursor.execute("SELECT ip FROM proxies WHERE  score < 80 ORDER BY score DESC LIMIT ?", (limit,))
                 results = cursor.fetchall()
                 results = ','.join(['http://' + row[0] for row in results])
                 return results  # 返回IP字符串列表
@@ -86,12 +88,11 @@ class DatabaseControl:
         try:
             with sqlite3.connect('proxies.db') as conn:
                 cursor = conn.cursor()
-                now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 cursor.execute("""
                     UPDATE proxies 
-                    SET last_checked = ?, is_alive = ?
+                    SET last_checked = datetime('now', 'localtime'), is_alive = ?
                     WHERE ip = ?
-                """, (now, status, ip))
+                """, (status, ip))
         except sqlite3.Error as e:
             print(f"更新代理状态失败")
 
@@ -103,14 +104,41 @@ class DatabaseControl:
         try:
             with sqlite3.connect('proxies.db') as conn:
                 cursor = conn.cursor()
-                now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                data = [(now, status, ip) for ip, status in ip_status_list]
+                data = [(status, response_time,score, ip) for ip, status, response_time ,score in ip_status_list]
+                print(data)
                 cursor.executemany("""
                     UPDATE proxies 
-                    SET last_checked = ?, is_alive = ?
+                    SET last_checked = datetime('now', 'localtime'), is_alive = ?, response_time = ?,score = ?
                     WHERE ip = ?
                 """, data)
 
             print(f"批量更新了 {len(ip_status_list)} 条IP状态")
         except sqlite3.Error as e:
             print(f"批量更新代理状态失败: {e}")
+
+    def delete_worse_ip(self):
+        try:
+            with sqlite3.connect('proxies.db') as conn:
+                cursor = conn.cursor()
+                cursor.execute("DELETE FROM proxies WHERE score <= 0")
+                conn.commit()
+                deleted_count = cursor.rowcount
+                print(f"成功删除 {deleted_count} 条评分<=0的代理IP")
+                return True
+        except sqlite3.Error as e:
+            print(f"移除异常代理失败: {e}")
+            return False
+
+    def get_current_score(self,ip_port):
+        try:
+            with sqlite3.connect('proxies.db') as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT score FROM proxies WHERE ip = ?",(ip_port,))
+                result = cursor.fetchone()
+                if result:
+                    return result[0]
+                else:
+                    return None
+        except sqlite3.Error as e:
+            print(f"score读取错误：{e}")
+            return None

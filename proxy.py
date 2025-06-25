@@ -1,6 +1,4 @@
 import requests
-from pydantic.json_schema import update_json_schema
-from sympy.codegen.ast import continue_
 
 from cal_time import today,yesterday,tomo
 
