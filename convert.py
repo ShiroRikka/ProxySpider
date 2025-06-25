@@ -23,6 +23,6 @@ def convert_ip_status_list(raw_list):
         if status == 1:
             update_score = 100
         else:
-            update_score = current_score - 10
+            update_score = (current_score if current_score is not None else 0) - 10
         ip_status_list.append((ip_port, status,responses_time,update_score))
     return ip_status_list

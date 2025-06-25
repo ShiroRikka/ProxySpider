@@ -85,7 +85,7 @@ def get_ips_to_test(limit: int =10):
             return results  # 返回IP字符串列表
     except sqlite3.Error as e:
         print(f"批量IP读取错误：{e}")
-        return []
+        return ""
 
 
 def get_best_ips_to_test():
@@ -98,7 +98,7 @@ def get_best_ips_to_test():
             return results  # 返回IP字符串列表
     except sqlite3.Error as e:
         print(f"批量IP读取错误：{e}")
-        return []
+        return ""
 
 def count_best_score_proxies():
     try:
