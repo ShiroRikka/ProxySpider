@@ -88,11 +88,11 @@ def get_ips_to_test(limit: int =10):
         return []
 
 
-def get_best_ips_to_test(limit: int =10):
+def get_best_ips_to_test():
     try:
         with sqlite3.connect('proxies.db') as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT ip FROM proxies WHERE score > 80 ORDER BY last_checked LIMIT ?", (limit,))
+            cursor.execute("SELECT ip FROM proxies WHERE score > 80")
             results = cursor.fetchall()
             results = ','.join(['http://' + row[0] for row in results])
             return results  # 返回IP字符串列表
@@ -100,6 +100,16 @@ def get_best_ips_to_test(limit: int =10):
         print(f"批量IP读取错误：{e}")
         return []
 
+def count_best_score_proxies():
+    try:
+        with sqlite3.connect('proxies.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM proxies WHERE score > 80")
+            result = cursor.fetchone()
+            return result[0] if result else 0
+    except sqlite3.Error as e:
+        print(f"查询高分代理数量出错: {e}")
+        return 0
 
 def update_ip_status(ip, status):
     try:

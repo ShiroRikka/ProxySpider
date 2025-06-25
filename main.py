@@ -18,7 +18,7 @@ while True:
         ip_list = tester.test_proxy_list(dc.get_ips_to_test(100), 100)
         print(f"当前测试的是低分代理")
     else:
-        ip_list = tester.test_proxy_list(dc.get_best_ips_to_test(16), 16)
+        ip_list = tester.test_proxy_list(dc.get_best_ips_to_test(dc.count_best_score_proxies()), dc.count_best_score_proxies())
         print(f"当前测试的是高分代理")
         time.sleep(300)
 
