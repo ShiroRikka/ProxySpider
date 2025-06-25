@@ -52,21 +52,24 @@ def create_index():
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_alive ON proxies (is_alive)')
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_last_checked ON proxies (last_checked)')
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_response_time ON proxies (response_time)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_score ON proxies (score)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_created_at ON proxies (created_at)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_alive_created ON proxies (is_alive, created_at)')
         print(f"数据库索引成功")
     except sqlite3.Error as e:
         print(f"数据库索引错误:{e}")
-
-
-def get_ip_to_test():
-    try:
-        with sqlite3.connect('proxies.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT ip FROM proxies WHERE is_alive = 0 ORDER BY created_at LIMIT 1")
-            result = cursor.fetchone()[0]
-            return 'http://' + result # 返回 (id, ip) 或 None
-    except sqlite3.Error as e:
-        print(f"ip读取错误：{e}")
-
+#
+#
+# def get_ip_to_test():
+#     try:
+#         with sqlite3.connect('proxies.db') as conn:
+#             cursor = conn.cursor()
+#             cursor.execute("SELECT ip FROM proxies WHERE is_alive = 0 ORDER BY created_at LIMIT 1")
+#             result = cursor.fetchone()[0]
+#             return 'http://' + result # 返回 (id, ip) 或 None
+#     except sqlite3.Error as e:
+#         print(f"ip读取错误：{e}")
+#
 
 def get_ips_to_test(limit: int =10):
     """
@@ -120,7 +123,6 @@ def update_ips_status(ip_status_list):
         with sqlite3.connect('proxies.db') as conn:
             cursor = conn.cursor()
             data = [(status, response_time,score, ip) for ip, status, response_time ,score in ip_status_list]
-            print(data)
             cursor.executemany("""
                 UPDATE proxies 
                 SET last_checked = datetime('now', 'localtime'), is_alive = ?, response_time = ?,score = ?
