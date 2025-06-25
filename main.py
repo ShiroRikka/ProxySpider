@@ -21,6 +21,8 @@ while True:
         print(f"当前测试的是高分代理")
         ip = convert.convert_ip_status_list(ip_list)
         dc.update_ips_status(ip)
+        time.sleep(2)
+        dc.output_proxies_to_txt()
         time.sleep(300)
         continue
 
