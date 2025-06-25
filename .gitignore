@@ -1,3 +1,7 @@
 __pycache__
 .idea
-.proxies.db
+proxies.db
+build
+dist
+main.spec
+proxies.txt
