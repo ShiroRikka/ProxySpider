@@ -10,14 +10,17 @@ dc.delete_old_ip()
 dc.multiple_insert(gp.get_proxy())
 
 dc.create_index()
+tester = ProxyTester()
 
 while True:
-    tester = ProxyTester()
-    ip_list = tester.test_proxy_list(dc.get_ips_to_test(16),16)
+
+    if dc.count_low_score_proxies() > 0 :
+        ip_list = tester.test_proxy_list(dc.get_ips_to_test(16), 16)
+    else:
+        ip_list = tester.test_proxy_list(dc.get_best_ips_to_test(16), 16)
+
+
     ip = convert.convert_ip_status_list(ip_list)
 
-
-    print(ip)
-
-
     dc.update_ips_status(ip)
+    time.sleep(2)

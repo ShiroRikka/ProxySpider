@@ -173,3 +173,14 @@ def get_current_score(ip_port):
     except sqlite3.Error as e:
         print(f"score读取错误：{e}")
         return None
+
+def count_low_score_proxies():
+    try:
+        with sqlite3.connect('proxies.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM proxies WHERE score < 80")
+            result = cursor.fetchone()
+            return result[0]
+    except sqlite3.Error as e:
+        print(f"查询低分代理数量出错: {e}")
+        return 0
