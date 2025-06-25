@@ -85,6 +85,19 @@ def get_ips_to_test(limit: int =10):
         return []
 
 
+def get_best_ips_to_test(limit: int =10):
+    try:
+        with sqlite3.connect('proxies.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT ip FROM proxies WHERE score > 80 ORDER BY last_checked LIMIT ?", (limit,))
+            results = cursor.fetchall()
+            results = ','.join(['http://' + row[0] for row in results])
+            return results  # 返回IP字符串列表
+    except sqlite3.Error as e:
+        print(f"批量IP读取错误：{e}")
+        return []
+
+
 def update_ip_status(ip, status):
     try:
         with sqlite3.connect('proxies.db') as conn:
@@ -136,7 +149,7 @@ def delete_old_ip():
     try:
         with sqlite3.connect('proxies.db') as conn:
             cursor = conn.cursor()
-            cursor.execute("DELETE FROM proxies WHERE created_at < datetime('now', 'localtime', '-1 day')")
+            cursor.execute("DELETE FROM proxies WHERE created_at < datetime('now', 'localtime', '-1 day') AND score < 80" )
             conn.commit()
             deleted_count = cursor.rowcount
             print(f"成功删除 {deleted_count} 条创建时间超过1天的老旧代理IP")
