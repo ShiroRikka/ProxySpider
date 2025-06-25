@@ -178,7 +178,7 @@ def count_low_score_proxies():
     try:
         with sqlite3.connect('proxies.db') as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT COUNT(*) FROM proxies WHERE score > 10 AND score < 80)")
+            cursor.execute("SELECT COUNT(*) FROM proxies WHERE score > 10 AND score < 80")
             result = cursor.fetchone()
             return result[0]
     except sqlite3.Error as e:
