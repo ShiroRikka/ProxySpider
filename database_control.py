@@ -184,6 +184,22 @@ def get_current_score(ip_port):
         print(f"score读取错误：{e}")
         return None
 
+def output_proxies_to_txt():
+    try:
+        with sqlite3.connect('proxies.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT ip FROM proxies WHERE score = 100")
+            results = cursor.fetchall()
+            ip_str = ','.join(['http://' + row[0] for row in results])
+        with open('proxies.txt', 'w', encoding='utf-8') as f:
+            f.write(ip_str)
+        print(f"成功导出 {len(results)} 条代理到 proxies.txt")
+    except sqlite3.Error as e:
+        print(f"批量IP导出错误：{e}")
+    except IOError as e:
+        print(f"写入文件错误：{e}")
+
+
 def count_low_score_proxies():
     try:
         with sqlite3.connect('proxies.db') as conn:
@@ -211,3 +227,4 @@ def delete_duplicate_ips():
     except sqlite3.Error as e:
         print(f"删除重复代理IP失败: {e}")
         return False
+
