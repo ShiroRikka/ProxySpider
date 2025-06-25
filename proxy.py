@@ -1,7 +1,10 @@
 import requests
-from get_url_time import get_url_time
+from pydantic.json_schema import update_json_schema
+from sympy.codegen.ast import continue_
 
-def get_proxy(url_time):
+from cal_time import today,yesterday,tomo
+
+def get_proxy():
     header={
         "accept":"*/*",
         "accept-encoding":"gzip, deflate, br, zstd",
@@ -12,17 +15,21 @@ def get_proxy(url_time):
         "user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0"
     }
 
-    url = "https://api.checkerproxy.net/v1/landing/archive/%s"%url_time
+    url = "https://api.checkerproxy.net/v1/landing/archive/%s"%today()
     print(url)
 
     response = requests.get(url=url,headers=header)
-    print(f"获取代理成功：{response.status_code}")
 
     ip_json_data = response.json()
 
-    tuple_list = [(ip,) for ip in ip_json_data['data']['proxyList']]
+    if response.status_code != 200:
+        print(f"今日的代理列表还未更新，将使用昨天的代理列表！")
+        url2 = "https://api.checkerproxy.net/v1/landing/archive/%s"%yesterday()
+        response = requests.get(url=url2, headers=header)
+        ip_json_data = response.json()
 
-    return tuple_list
-
-
-
+        tuple_list = [(ip,) for ip in ip_json_data['data']['proxyList']]
+        return tuple_list
+    else:
+        tuple_list = [(ip,) for ip in ip_json_data['data']['proxyList']]
+        return tuple_list
