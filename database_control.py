@@ -192,7 +192,7 @@ def delete_duplicate_ips():
             cursor.execute("""
                 DELETE FROM proxies
                 WHERE id NOT IN (
-                    SELECT MAX(id) FROM proxies GROUP BY ip
+                    SELECT MIN(id) FROM proxies GROUP BY ip
                 )
             """)
             conn.commit()

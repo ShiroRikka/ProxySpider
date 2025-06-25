@@ -13,7 +13,7 @@ tester = ProxyTester()
 while True:
     dc.delete_duplicate_ips()
     if dc.count_low_score_proxies() > 0 :
-        ip_list = tester.test_proxy_list(dc.get_ips_to_test(16), 16)
+        ip_list = tester.test_proxy_list(dc.get_ips_to_test(100), 100)
         print(f"当前测试的是低分代理")
     else:
         ip_list = tester.test_proxy_list(dc.get_best_ips_to_test(16), 16)
