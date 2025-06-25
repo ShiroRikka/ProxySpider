@@ -6,21 +6,23 @@ import convert
 dc.create()
 dc.delete_old_ip()
 dc.multiple_insert(gp.get_proxy())
-
+time.sleep(2)
 dc.delete_duplicate_ips()
-
+time.sleep(2)
 dc.create_index()
 tester = ProxyTester()
 
 while True:
-    dc.delete_duplicate_ips()
     if dc.count_low_score_proxies() > 0 :
         ip_list = tester.test_proxy_list(dc.get_ips_to_test(100), 100)
         print(f"当前测试的是低分代理")
     else:
-        ip_list = tester.test_proxy_list(dc.get_best_ips_to_test(dc.count_best_score_proxies()), dc.count_best_score_proxies())
+        ip_list = tester.test_proxy_list(dc.get_best_ips_to_test(), dc.count_best_score_proxies())
         print(f"当前测试的是高分代理")
+        ip = convert.convert_ip_status_list(ip_list)
+        dc.update_ips_status(ip)
         time.sleep(300)
+        continue
 
 
     ip = convert.convert_ip_status_list(ip_list)
