@@ -95,8 +95,9 @@ class ProxyTester:
             if not proxy_list:
                 proxy_list = ["none"]
             else:
-                if "none" not in [p.lower() for p in proxy_list] and "direct" not in [p.lower() for p in proxy_list]:
-                    proxy_list.insert(0, "none")
+                pass
+                # if "none" not in [p.lower() for p in proxy_list] and "direct" not in [p.lower() for p in proxy_list]:
+                #     proxy_list.insert(0, "none")
         
         results = []
         # 使用线程池并发测试
