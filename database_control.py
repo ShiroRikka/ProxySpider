@@ -92,7 +92,7 @@ def get_best_ips_to_test():
     try:
         with sqlite3.connect('proxies.db') as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT ip FROM proxies WHERE score > 80")
+            cursor.execute("SELECT ip FROM proxies WHERE score >= 80")
             results = cursor.fetchall()
             results = ','.join(['http://' + row[0] for row in results])
             return results  # 返回IP字符串列表
@@ -204,7 +204,7 @@ def count_low_score_proxies():
     try:
         with sqlite3.connect('proxies.db') as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT COUNT(*) FROM proxies WHERE score >= 10 AND score < 80")
+            cursor.execute("SELECT COUNT(*) FROM proxies WHERE score >= 10 AND score < 70")
             result = cursor.fetchone()
             return result[0]
     except sqlite3.Error as e:
