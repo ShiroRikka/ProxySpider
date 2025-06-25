@@ -20,7 +20,7 @@ def create():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 ip TEXT NOT NULL,
                 last_checked TIMESTAMP DEFAULT (datetime('now', 'localtime')),
-                score INTEGER DEFAULT 50,
+                score INTEGER DEFAULT 30,
                 is_alive BOOLEAN DEFAULT 0,
                 response_time INTEGER,
                 created_at TIMESTAMP DEFAULT (datetime('now', 'localtime')),
