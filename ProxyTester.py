@@ -163,8 +163,12 @@ class ProxyTester:
 
 
 
-def test_proxy_connectivity(proxy_string: str = "none", timeout: int = 10) -> str:
+def test_proxy_connectivity(proxy_string: str = "none", timeout: int = 10) -> list[dict[str, Any]]:
     tester = ProxyTester(timeout=timeout)
     results = tester.test_proxy_list(proxy_string)
-    return tester.format_test_results(results)
+    return results
 
+if __name__ == "__main__":
+
+    print(test_proxy_connectivity("http://152.42.170.187:9090",))
+    print(test_proxy_connectivity("http://181.129.158.131:999"))

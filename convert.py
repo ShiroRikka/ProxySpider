@@ -1,28 +1,52 @@
-from database_control import get_current_score
+from database_control import ProxyDB
+"""
+批量更新IP状态
+ip_status_list 格式示例:
+[
+    {
+        'proxy': 'http://152.42.170.187:9090',
+        'status': 'success',
+        'response_time': 4744.03,
+        'error': None,
+        'ip_info': None
+    },
+    ...
+]
+"""
 
-
-def convert_ip_status_list(raw_list):
-    ip_status_list = []
+def convert_ip_info(raw_list:list[dict])->list[tuple]:
+    """
+    返回的格式：[('152.42.170.187:9090', 1, 4744.03, 100)]
+    返回的格式：[('IP', IS_ALIVE,response_time , SCORE)]
+    """
+    ip_info = []
+    proxy_db = ProxyDB()
     for item in raw_list:
         proxy = item.get('proxy')
         status_str = item.get('status')
-        responses_time = item.get('response_time')
-        # 过滤掉非IP代理（如直连）
-        if proxy == '直连':
-            continue
-        # 提取IP地址
-        # proxy格式示例：http://190.2.143.237:13875
+        response_time = item.get('response_time',0)
         try:
             ip_port = proxy.split('//')[-1]  # 去掉协议部分
-        except Exception:
+        except (AttributeError, IndexError):
             continue
         # 转换状态
         status = 1 if status_str == 'success' else 0
-
-        current_score = get_current_score(ip_port)
+        current_score = proxy_db.get_score(ip_port)
         if status == 1:
             update_score = 100
         else:
             update_score = (current_score if current_score is not None else 0) - 10
-        ip_status_list.append((ip_port, status,responses_time,update_score))
-    return ip_status_list
+        ip_info.append((ip_port, status,response_time,update_score))
+    return ip_info
+
+if __name__ == "__main__":
+    test=[
+        {
+            'proxy': 'http://152.42.170.187:9090',
+            'status': 'success',
+            'response_time': 4744.03,
+            'error': None,
+            'ip_info': None
+        },
+    ]
+    print(convert_ip_info(test))

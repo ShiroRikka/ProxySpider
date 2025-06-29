@@ -1,8 +1,12 @@
-import database_control as dc
 import proxy as gp
-from ProxyTester import *
+from ProxyTester import test_proxy_connectivity
+from ProxyTester import ProxyTester
+import time
 import convert
+from database_control import ProxyDB
+from loguru import logger
 
+dc = ProxyDB()
 dc.create()
 dc.delete_old_ip()
 dc.multiple_insert(gp.get_proxy())
@@ -13,21 +17,28 @@ dc.create_index()
 tester = ProxyTester()
 
 while True:
-    if dc.count_low_score_proxies() > 0 :
-        ip_list = tester.test_proxy_list(dc.get_ips_to_test(500), 500)
-        print(f"当前测试的是低分代理")
+    if dc.ip_count() > 0 :
+        ip_list =[]
+        for ip in dc.get_new_ips_from_db(500):
+            ip = f"http://{ip}"
+            ip_list.append(ip)
+        ip_for_test =','.join(ip_list)
+        logger.info(f"当前测试的是低分代理")
     else:
-        ip_list = tester.test_proxy_list(dc.get_best_ips_to_test(), dc.count_best_score_proxies())
-        print(f"当前测试的是高分代理")
-        ip = convert.convert_ip_status_list(ip_list)
-        dc.update_ips_status(ip)
+        ip_list = []
+        for ip in dc.get_best_ips_from_db(500):
+            ip = f"http://{ip}"
+            ip_list.append(ip)
+        ip_for_test =','.join(ip_list)
+        logger.info(f"当前测试的是高分代理")
+        ip_info = convert.convert_ip_info(tester.test_proxy_list(ip_for_test, 500))
+        dc.update_ips_status(ip_info)
         time.sleep(2)
         dc.output_proxies_to_txt()
         time.sleep(300)
         continue
 
 
-    ip = convert.convert_ip_status_list(ip_list)
-
-    dc.update_ips_status(ip)
+    ip_info = convert.convert_ip_info(tester.test_proxy_list(ip_for_test, 500))
+    dc.update_ips_status(ip_info)
     time.sleep(2)
